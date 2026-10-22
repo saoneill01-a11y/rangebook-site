@@ -1,0 +1,213 @@
+<!doctype html>
+<!-- Range Book website. Plain HTML: no tracking, no cookies, nothing loaded from other sites. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Range Book: self-hosted ballistics calculator and reloading log</title>
+<meta name="description" content="Range Book is a free, open-source ballistics calculator, reloading log and gear tracker that you run on your own server and use from your phone, even at the range with no signal.">
+<meta name="theme-color" content="#e2dccf" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#111513" media="(prefers-color-scheme: dark)">
+<meta property="og:title" content="Range Book">
+<meta property="og:description" content="A free, self-hosted ballistics calculator, reloading log and gear tracker.">
+<meta property="og:image" content="https://rangebook.org/screenshots/shooting-desktop.png">
+<meta property="og:url" content="https://rangebook.org/">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="preload" href="fonts/barlow-condensed-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/ibm-plex-sans.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Fonts are stored with the site (SIL Open Font License, see fonts/). */
+@font-face{font-family:"Barlow Condensed";font-weight:700;font-display:swap;src:url(fonts/barlow-condensed-700.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Sans";font-weight:100 700;font-display:swap;src:url(fonts/ibm-plex-sans.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Mono";font-weight:500;font-display:swap;src:url(fonts/ibm-plex-mono-500.woff2) format("woff2")}
+
+/* Colors from the app (public/index.html): light is tan and teal, dark follows the visitor's device setting. */
+:root{--bg:#e2dccf;--surface:#fff;--fg:#1b201c;--muted:#5b645d;--line:#d3d8d0;--accent:#0e5a61;--accent-fg:#fff;--warn:#a2361a;--shadow:rgb(0 0 0/.12);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111513;--surface:#1a1f1c;--fg:#e4e9e3;--muted:#97a299;--line:#2d3530;--accent:#5ec3cb;--accent-fg:#0b1a1b;--warn:#ff8a6b;--shadow:rgb(0 0 0/.35);color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#111513;--surface:#1a1f1c;--fg:#e4e9e3;--muted:#97a299;--line:#2d3530;--accent:#5ec3cb;--accent-fg:#0b1a1b;--warn:#ff8a6b;--shadow:rgb(0 0 0/.35);color-scheme:dark}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:var(--accent)}
+img{display:block;height:auto}
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px}
+h1,h2{font-family:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;font-weight:700;margin:0;text-transform:uppercase;text-wrap:balance}
+
+header{display:flex;align-items:center;justify-content:space-between;padding:18px 0;border-bottom:1px solid var(--line)}
+.logo{display:flex;align-items:center;gap:8px;font:700 22px "Barlow Condensed","Arial Narrow",sans-serif;letter-spacing:.06em;color:var(--accent);text-decoration:none}
+.logo svg{width:22px;height:22px}
+.gh{font-weight:600;text-decoration:none}
+
+.hero{display:grid;grid-template-columns:1fr 1.25fr;gap:40px;align-items:center;padding:56px 0}
+h1{font-size:clamp(40px,6vw,60px);line-height:1.02}
+h1 em{font-style:normal;color:var(--accent)}
+.lede{font-size:18px;color:var(--muted);margin:18px 0 0}
+.btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}
+.btn{display:inline-block;padding:12px 20px;border-radius:8px;font-weight:600;text-decoration:none;border:1px solid var(--line);color:var(--fg)}
+.btn.primary{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+.facts{list-style:none;padding:0;margin:24px 0 0;display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;font-size:15px;color:var(--muted)}
+.facts li::before{content:"✓ ";color:var(--accent);font-weight:700}
+.shot{width:100%;border-radius:10px;border:1px solid var(--line);box-shadow:0 20px 50px var(--shadow)}
+
+.row{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;padding:48px 0;border-top:1px solid var(--line)}
+.row.flip .text{order:2}
+.kicker{font:500 14px "IBM Plex Mono",ui-monospace,Menlo,monospace;color:var(--accent);letter-spacing:.08em;text-transform:uppercase}
+.row h2{font-size:38px;line-height:1.05;margin:6px 0 12px}
+.row p{color:var(--muted);margin:0 0 10px}
+.row p b{color:var(--fg)}
+.ticks{list-style:none;padding:0;margin:14px 0}
+.ticks li{position:relative;padding-left:22px;margin-bottom:8px;color:var(--muted)}
+.ticks li::before{content:"✓";position:absolute;left:0;color:var(--accent);font-weight:700}
+.ticks b,.row p b{color:var(--fg)}
+.small{font-size:14px}
+.illo{width:100%;max-width:300px;justify-self:center;filter:drop-shadow(0 16px 30px var(--shadow))}
+.illo .paper{fill:#f4f1ea;stroke:var(--line)}
+.illo .ink{fill:#1b201c}
+.illo .aim circle{fill:none;stroke:#1b201c;stroke-width:2}
+.illo .aim circle.ink{fill:#1b201c}
+.illo .group{fill:none;stroke:#0e5a61;stroke-width:2;stroke-dasharray:5 4}
+.illo .hit circle{fill:#0e5a61;stroke:#f4f1ea;stroke-width:2}
+.illo .hit text{fill:#fff;font:600 12px "IBM Plex Sans",sans-serif;text-anchor:middle}
+.pair{display:flex;gap:14px;justify-content:center}
+.pair img{width:46%;max-width:250px;border-radius:18px;border:1px solid var(--line)}
+
+.band{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px;display:grid;grid-template-columns:repeat(6,1fr);gap:10px;text-align:center;margin:8px 0 40px}
+.band b{display:block;font:500 26px "IBM Plex Mono",ui-monospace,Menlo,monospace;color:var(--accent)}
+.band span{font-size:13px;color:var(--muted)}
+.band p{grid-column:1/-1;margin:6px 0 0;font-size:14px;color:var(--muted)}
+
+.safety{border:1px solid var(--warn);border-radius:10px;padding:16px 18px;margin-bottom:40px}
+.safety b{color:var(--warn)}
+
+.install{text-align:center;padding:48px 0;border-top:1px solid var(--line)}
+.install h2{font-size:38px}
+.install p{color:var(--muted);max-width:620px;margin:12px auto 0}
+.install .btns{justify-content:center}
+
+footer{border-top:1px solid var(--line);padding:24px 0 40px;color:var(--muted);font-size:14px;display:flex;flex-wrap:wrap;gap:8px 20px;justify-content:space-between}
+
+@media (max-width:760px){
+  .hero,.row{grid-template-columns:1fr;gap:24px}
+  .hero{padding:36px 0}
+  .row.flip .text{order:0}
+  .band{grid-template-columns:repeat(3,1fr)}
+  .facts{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="logo" href="./"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.5" fill="currentColor"/></svg>RANGE BOOK</a>
+    <a class="gh" href="https://github.com/saoneill01-a11y/rangebook">GitHub →</a>
+  </header>
+
+  <main>
+    <div class="hero">
+      <div>
+        <h1>Ballistics, reloading and gear. <em>On your own server.</em></h1>
+        <p class="lede">Range Book is a free, self-hosted app you run at home and use from your phone as a home-screen app, even at the range with no signal.</p>
+        <div class="btns">
+          <a class="btn primary" href="https://github.com/saoneill01-a11y/rangebook#install">Install from GitHub</a>
+        </div>
+        <ul class="facts">
+          <li>Free &amp; open source (AGPL-3.0)</li>
+          <li>Your data stays on your server</li>
+          <li>A sign-in for each person</li>
+          <li>Unraid, NAS, Pi or Docker</li>
+        </ul>
+      </div>
+      <img class="shot" src="screenshots/shooting-desktop.png" width="1600" height="1025" alt="The Shooting page: a bullet path chart with several zeros, in the dark theme">
+    </div>
+
+    <section class="row">
+      <div class="text">
+        <div class="kicker">Shooting</div>
+        <h2>Know your hold</h2>
+        <p>A ballistics calculator with a bullet path chart, range table, printable dope cards and Field mode for the bench.</p>
+        <p>See your scope's reticle with the hold drawn on it, and log range trips with conditions, rounds fired and target photos.</p>
+      </div>
+      <div class="pair">
+        <img src="screenshots/phone-dope.png" width="462" height="1000" loading="lazy" alt="A dope card on a phone, in the Red Night theme">
+        <img src="screenshots/phone-target-gray.png" width="462" height="1000" loading="lazy" alt="The hold for 400 yards drawn on a scope reticle">
+      </div>
+    </section>
+
+    <section class="row flip">
+      <div class="text">
+        <div class="kicker">Reloading</div>
+        <h2>Every load, every ladder</h2>
+        <p>Load recipes, ladder tests and velocity charts. Import from LabRadar, Garmin Xero, MagnetoSpeed and RangeCraft chronographs.</p>
+        <p>Track components on hand and cost per round.</p>
+      </div>
+      <img class="shot" src="screenshots/reloading-desktop.png" width="1600" height="1025" loading="lazy" alt="A ladder test with its summary and velocity chart">
+    </section>
+
+    <section class="row" id="live-target">
+      <div class="text">
+        <div class="kicker">Live target</div>
+        <h2>Watch every shot land</h2>
+        <p>Put your phone on your spotting scope and aim it at a printed Range Book target. Fire, tap Shot (or let it listen for the bang), and Range Book marks the new hole with a number, with the group size, MOA and mean radius.</p>
+        <ul class="ticks">
+          <li><b>Off to the side is fine.</b> The corner squares tell it how the paper is tilted, so the measurements stay right from an angle.</li>
+          <li><b>Your reticle over the target,</b> drawn to scale with the hold for that distance, so you can see where the crosshair sat.</li>
+          <li><b>Watch or control it from an iPad</b> at the bench while the phone stays on the scope. Or start it on the iPad and use the phone as its camera.</li>
+          <li><b>Shot by shot in a ladder:</b> each hole is matched to its chronograph velocity, so you can see whether faster shots hit higher.</li>
+          <li><b>Print the targets from the app</b> (Letter and 11 × 17), or tap the corners of any other paper target.</li>
+        </ul>
+        <p class="small">Your phone only allows the camera on a secure (https) address. The README shows how to set one up.</p>
+      </div>
+      <svg class="illo" viewBox="0 0 300 380" role="img" aria-label="Drawing of a printed target with four corner squares and five numbered shot marks around one aim point">
+        <rect x="10" y="10" width="280" height="360" rx="6" class="paper"/>
+        <rect x="24" y="24" width="22" height="22" class="ink"/><rect x="254" y="24" width="22" height="22" class="ink"/>
+        <rect x="24" y="334" width="22" height="22" class="ink"/><rect x="254" y="334" width="22" height="22" class="ink"/>
+        <g class="aim"><circle cx="150" cy="150" r="58"/><circle cx="150" cy="150" r="38"/><circle cx="150" cy="150" r="18" class="ink"/></g>
+        <g class="aim small"><circle cx="80" cy="290" r="18"/><circle cx="80" cy="290" r="7" class="ink"/><circle cx="150" cy="290" r="18"/><circle cx="150" cy="290" r="7" class="ink"/><circle cx="220" cy="290" r="18"/><circle cx="220" cy="290" r="7" class="ink"/></g>
+        <circle cx="167" cy="121" r="36" class="group"/>
+        <g class="hit"><circle cx="148" cy="106" r="10"/><text x="148" y="110">1</text></g>
+        <g class="hit"><circle cx="186" cy="114" r="10"/><text x="186" y="118">2</text></g>
+        <g class="hit"><circle cx="150" cy="136" r="10"/><text x="150" y="140">3</text></g>
+        <g class="hit"><circle cx="180" cy="144" r="10"/><text x="180" y="148">4</text></g>
+        <g class="hit"><circle cx="168" cy="98" r="10"/><text x="168" y="102">5</text></g>
+      </svg>
+    </section>
+
+    <section class="row flip">
+      <div class="text">
+        <div class="kicker">Gear &amp; Ranges</div>
+        <h2>Everything in the safe</h2>
+        <p>Guns with round counts, barrel life and cleaning reminders. Scopes, suppressors, magazines, ammo, inventory and saved ranges.</p>
+        <p>An encrypted document vault for things like tax stamps.</p>
+      </div>
+      <div class="pair">
+        <img src="screenshots/phone-gun.png" width="462" height="1000" loading="lazy" alt="A gun's round count, barrel life and cleaning reminder">
+        <img src="screenshots/phone-home.png" width="462" height="1000" loading="lazy" alt="The home screen with rounds fired and recent range trips">
+      </div>
+    </section>
+
+    <div class="band">
+      <div><b>1,000</b><span>bullets</span></div><div><b>115</b><span>cartridges</span></div><div><b>150</b><span>powders</span></div>
+      <div><b>155</b><span>factory loads</span></div><div><b>120</b><span>scopes</span></div><div><b>430</b><span>suppressors</span></div>
+      <p>Built in (about this many of each), and you can edit any of them.</p>
+    </div>
+
+    <div class="safety"><b>Safety first.</b> Range Book is a notebook and a calculator, not a load manual. Always work from a current published load manual.</div>
+
+    <section class="install" id="install">
+      <h2>Run it yourself</h2>
+      <p>Range Book runs on your own server: Unraid, a NAS, a Raspberry Pi or any computer with Docker. Each person gets their own sign-in and private data, and your data stays on your server. Range Book is still in beta.</p>
+      <div class="btns">
+        <a class="btn primary" href="https://github.com/saoneill01-a11y/rangebook#install">Install steps on GitHub</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>Range Book is free software under the GNU AGPL-3.0.</span>
+    <span><a href="https://github.com/saoneill01-a11y/rangebook">GitHub</a> · <a href="mailto:hello@rangebook.org">hello@rangebook.org</a></span>
+  </footer>
+</div>
+</body>
+</html>
