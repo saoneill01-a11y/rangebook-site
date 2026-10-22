@@ -35,6 +35,9 @@ img{display:block;height:auto}
 .wrap{max-width:1120px;margin:0 auto;padding:0 16px}
 h1,h2{font-family:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;font-weight:700;margin:0;text-transform:uppercase;text-wrap:balance}
 
+.topbar{display:block;background:var(--accent);color:var(--accent-fg);text-decoration:none;text-align:center;font-size:14px;line-height:1.4;padding:9px 16px}
+.topbar b{white-space:nowrap;margin-left:4px}
+.topbar:hover b,.topbar:focus-visible b{text-decoration:underline}
 header{display:flex;align-items:center;justify-content:space-between;padding:18px 0;border-bottom:1px solid var(--line)}
 .logo{display:flex;align-items:center;gap:8px;font:700 22px "Barlow Condensed","Arial Narrow",sans-serif;letter-spacing:.06em;color:var(--accent);text-decoration:none}
 .logo svg{width:22px;height:22px}
@@ -100,6 +103,7 @@ footer{border-top:1px solid var(--line);padding:24px 0 40px;color:var(--muted);f
 </style>
 </head>
 <body>
+<a class="topbar" href="https://demo.rangebook.org/">Try Range Book in your browser: no install, nothing saved. <b>Open the demo →</b></a>
 <div class="wrap">
   <header>
     <a class="logo" href="./"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.5" fill="currentColor"/></svg>RANGE BOOK</a>
