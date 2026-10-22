@@ -47,6 +47,8 @@ h1 em{font-style:normal;color:var(--accent)}
 .btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}
 .btn{display:inline-block;padding:12px 20px;border-radius:8px;font-weight:600;text-decoration:none;border:1px solid var(--line);color:var(--fg)}
 .btn.primary{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+.demo-note{font-size:14px;color:var(--muted);margin:12px 0 0;max-width:460px}
+.demo-note b{color:var(--fg)}
 .facts{list-style:none;padding:0;margin:24px 0 0;display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;font-size:15px;color:var(--muted)}
 .facts li::before{content:"✓ ";color:var(--accent);font-weight:700}
 .shot{width:100%;border-radius:10px;border:1px solid var(--line);box-shadow:0 20px 50px var(--shadow)}
@@ -111,7 +113,9 @@ footer{border-top:1px solid var(--line);padding:24px 0 40px;color:var(--muted);f
         <p class="lede">Range Book is a free, self-hosted app you run at home and use from your phone as a home-screen app, even at the range with no signal.</p>
         <div class="btns">
           <a class="btn primary" href="https://github.com/saoneill01-a11y/rangebook#install">Install from GitHub</a>
+          <a class="btn" href="https://demo.rangebook.org/">Try the demo</a>
         </div>
+        <p class="demo-note">The demo is a public copy of Range Book. Tap <b>Try it as a guest</b> to use everything without an account. It's only a demo: nothing you enter is saved.</p>
         <ul class="facts">
           <li>Free &amp; open source (AGPL-3.0)</li>
           <li>Your data stays on your server</li>
@@ -200,6 +204,7 @@ footer{border-top:1px solid var(--line);padding:24px 0 40px;color:var(--muted);f
       <p>Range Book runs on your own server: Unraid, a NAS, a Raspberry Pi or any computer with Docker. Each person gets their own sign-in and private data, and your data stays on your server. Range Book is still in beta.</p>
       <div class="btns">
         <a class="btn primary" href="https://github.com/saoneill01-a11y/rangebook#install">Install steps on GitHub</a>
+        <a class="btn" href="https://demo.rangebook.org/">Try the demo first</a>
       </div>
     </section>
   </main>
