@@ -75,10 +75,19 @@ h1 em{font-style:normal;color:var(--accent)}
 .illo .group{fill:none;stroke:#0e5a61;stroke-width:2;stroke-dasharray:5 4}
 .illo .hit circle{fill:#0e5a61;stroke:#f4f1ea;stroke-width:2}
 .illo .hit text{fill:#fff;font:600 12px "IBM Plex Sans",sans-serif;text-anchor:middle}
+.illo .ttl{fill:#0e5a61;font:700 26px "Barlow Condensed","Arial Narrow",sans-serif;letter-spacing:.08em;text-anchor:middle}
+.illo .base{stroke:#9aa39b;stroke-width:2}
+.illo .beep{stroke:#5b645d;stroke-width:2;stroke-dasharray:4 4}
+.illo .lbl{fill:#5b645d;font:500 13px "IBM Plex Sans",sans-serif;text-anchor:middle}
+.illo .wave path{fill:none;stroke:#0e5a61;stroke-width:3;stroke-linejoin:round}
+.illo .stop{fill:#c62828}
+.illo .stoptxt{fill:#fff;font:700 26px "Barlow Condensed","Arial Narrow",sans-serif;letter-spacing:.1em;text-anchor:middle}
 .pair{display:flex;gap:14px;justify-content:center}
 .pair img{width:46%;max-width:250px;border-radius:18px;border:1px solid var(--line)}
 
-.band{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px;display:grid;grid-template-columns:repeat(6,1fr);gap:10px;text-align:center;margin:8px 0 40px}
+.band{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px;display:flex;flex-wrap:wrap;justify-content:center;gap:14px 10px;text-align:center;margin:8px 0 40px}
+.band div{flex:1 0 92px;max-width:160px}
+.band p{flex-basis:100%}
 .band b{display:block;font:500 26px "IBM Plex Mono",ui-monospace,Menlo,monospace;color:var(--accent)}
 .band span{font-size:13px;color:var(--muted)}
 .band p{grid-column:1/-1;margin:6px 0 0;font-size:14px;color:var(--muted)}
@@ -97,7 +106,6 @@ footer{border-top:1px solid var(--line);padding:24px 0 40px;color:var(--muted);f
   .hero,.row{grid-template-columns:1fr;gap:24px}
   .hero{padding:36px 0}
   .row.flip .text{order:0}
-  .band{grid-template-columns:repeat(3,1fr)}
   .facts{grid-template-columns:1fr}
 }
 </style>
@@ -136,6 +144,13 @@ footer{border-top:1px solid var(--line);padding:24px 0 40px;color:var(--muted);f
         <h2>Know your hold</h2>
         <p>A ballistics calculator with a bullet path chart, range table, printable dope cards and Field mode for the bench.</p>
         <p>See your scope's reticle with the hold drawn on it, and log range trips with conditions, rounds fired and target photos.</p>
+        <ul class="ticks">
+          <li><b>Transonic marked</b> on the chart, range table and dope card, so you can see where the bullet slows down.</li>
+          <li><b>Effective range:</b> set a minimum speed or energy, and an orange line shows where your bullet drops below it. When the bullet's maker publishes a minimum expansion speed, it's already filled in.</li>
+          <li><b>Bullet drop reticles:</b> see which distance each mark lines up with for your load. 14 scopes have their marks built in.</li>
+          <li><b>All your groups</b> from every trip with a profile on one target, with the mean radius and where they center.</li>
+          <li><b>Suppressor on or off:</b> mark what you shot without it, and the measured shift goes into your dope.</li>
+        </ul>
       </div>
       <div class="pair">
         <img src="screenshots/phone-dope.png" width="462" height="1000" loading="lazy" alt="A dope card on a phone, in the Red Night theme">
@@ -182,11 +197,42 @@ footer{border-top:1px solid var(--line);padding:24px 0 40px;color:var(--muted);f
       </svg>
     </section>
 
-    <section class="row flip">
+    <section class="row flip" id="training">
+      <div class="text">
+        <div class="kicker">Training</div>
+        <h2>Time every drill</h2>
+        <p>The shot timer beeps, then hears each shot through your phone's microphone and shows your first shot and every split. Add a par time for a second beep, or play the beep through a Bluetooth speaker. It tells its own beeps apart from your shots.</p>
+        <ul class="ticks">
+          <li><b>Six common drills built in</b> (Bill drill, El Presidente, FAST, 5×5, Failure to stop, Draw to first shot), and you can add your own.</li>
+          <li><b>A session for each day you practice,</b> with every run drill by drill and your best and average times.</li>
+          <li><b>See your progress:</b> a chart for each drill, and Compare two sessions side by side to see what got better.</li>
+          <li><b>Training rounds count</b> toward the gun's round count and barrel life, its suppressor and your ammo.</li>
+        </ul>
+        <p class="small">The microphone also needs the https address. Nothing is recorded.</p>
+      </div>
+      <svg class="illo" viewBox="0 0 300 380" role="img" aria-label="Drawing of the shot timer: a beep, then five numbered shots on a sound line, and a red Stop button">
+        <rect x="10" y="10" width="280" height="360" rx="18" class="paper"/>
+        <text x="150" y="62" class="ttl">SHOT TIMER</text>
+        <line x1="30" y1="190" x2="270" y2="190" class="base"/>
+        <line x1="52" y1="150" x2="52" y2="200" class="beep"/><text x="52" y="222" class="lbl">beep</text>
+        <g class="wave"><path d="M96 190 L100 120 L104 190"/><path d="M136 190 L140 128 L144 190"/><path d="M171 190 L175 124 L179 190"/><path d="M206 190 L210 130 L214 190"/><path d="M241 190 L245 122 L249 190"/></g>
+        <g class="hit"><circle cx="100" cy="100" r="10"/><text x="100" y="104">1</text></g>
+        <g class="hit"><circle cx="140" cy="108" r="10"/><text x="140" y="112">2</text></g>
+        <g class="hit"><circle cx="175" cy="104" r="10"/><text x="175" y="108">3</text></g>
+        <g class="hit"><circle cx="210" cy="110" r="10"/><text x="210" y="114">4</text></g>
+        <g class="hit"><circle cx="245" cy="102" r="10"/><text x="245" y="106">5</text></g>
+        <text x="150" y="222" class="lbl">first shot · splits</text>
+        <rect x="60" y="270" width="180" height="58" rx="12" class="stop"/>
+        <text x="150" y="307" class="stoptxt">STOP</text>
+      </svg>
+    </section>
+
+    <section class="row">
       <div class="text">
         <div class="kicker">Gear &amp; Ranges</div>
         <h2>Everything in the safe</h2>
-        <p>Guns with round counts, barrel life and cleaning reminders. Scopes, suppressors, magazines, ammo, inventory and saved ranges.</p>
+        <p>Guns with round counts, barrel life and cleaning reminders. Optics (scopes, red dots, holographic and prism sights), suppressors, magazines, ammo, inventory and saved ranges.</p>
+        <p>On a gun with a red dot, the dope card gives holds in inches and dot widths instead of clicks.</p>
         <p>An encrypted document vault for things like tax stamps.</p>
       </div>
       <div class="pair">
@@ -197,7 +243,8 @@ footer{border-top:1px solid var(--line);padding:24px 0 40px;color:var(--muted);f
 
     <div class="band">
       <div><b>1,000</b><span>bullets</span></div><div><b>115</b><span>cartridges</span></div><div><b>150</b><span>powders</span></div>
-      <div><b>155</b><span>factory loads</span></div><div><b>120</b><span>scopes</span></div><div><b>430</b><span>suppressors</span></div>
+      <div><b>355</b><span>factory loads</span></div><div><b>130</b><span>scopes</span></div><div><b>75</b><span>red dots and sights</span></div>
+      <div><b>430</b><span>suppressors</span></div>
       <p>Built in (about this many of each), and you can edit any of them.</p>
     </div>
 
